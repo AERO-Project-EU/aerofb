@@ -1,0 +1,94 @@
+name: build & push
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  workflow_dispatch:
+
+
+env:
+  # Uses docker.io if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_PREFIX: ${{ github.repository }}
+
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        bench:
+          - helloworld
+          - chameleon
+          - cnn_serving
+          - image_processing
+          - json_serdes
+          - lr_serving
+          - lr_training
+          - matmul
+          - pyaes
+          - rnn_serving
+          - video_processing
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract repository metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.bench }}
+          labels: |
+            maintainer=${{ github.repository_owner }}
+            org.opencontainers.image.title=${{ env.IMAGE_PREFIX }}-${{ matrix.bench }}
+            org.opencontainers.image.description=AERO port of FunctionBench "${{ matrix.bench }}".
+            org.opencontainers.image.source=${{ github.repositoryUrl }}
+            org.opencontainers.image.licenses=Apache-2.0
+          flavor: latest=false
+          tags: |
+            type=semver,priority=900,prefix=,suffix=,pattern={{version}},value=
+            type=edge,priority=700,prefix=,suffix=,branch=$repo.default_branch
+            type=sha,priority=100,prefix={{branch}}-
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+      - name: Hard link server.py
+        run: ln server.py benches/${{ matrix.bench }}/
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          file: benches/${{ matrix.bench }}/Dockerfile
+          context: benches/${{ matrix.bench }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          platforms: |
+            linux/amd64
+            linux/arm64/v8
+          pull: true
+          push: true
+          #cache-from: type=gha
+          #cache-to: type=gha,mode=max
+          no-cache: true
+
