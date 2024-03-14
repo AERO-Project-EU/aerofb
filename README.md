@@ -19,3 +19,13 @@
 |      `pyaes`     |:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |   `rnn_serving`  |:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |`video_processing`|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+
+## License
+
+Licensed under the terms of Apache License, Version 2.0.
+
+For more information, consult the included [LICENSE](LICENSE) file.
+
+## Acknowledgments
+
+This work is supported by the European Commission under the Horizon Europe grant 101092850 (project AERO).
