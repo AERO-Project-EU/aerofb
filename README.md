@@ -1,5 +1,7 @@
 # AERO FunctionBench
 
+![ghcri.io.yml-main](https://github.com/ckatsak/aerofb/actions/workflows/ghcr.io.yml/badge.svg?branch=main)
+
 > [!NOTE]
 > Similar to `ckatsak/snaplace-fbpml`, but using plain JSON over HTTP (`Flask` +
 > `gunicorn`) instead of `protobuf` over `gRPC` (over HTTP/2).
