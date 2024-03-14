@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+
+FROM tensorflow/tensorflow:2.12.0
+# sha256:7263b3490857fedad7f71ad219518358b0341ee5c716a47d4691daddc47cad3b
+
+COPY *.py /bench/
+COPY *.h5 /bench/
+COPY *.jpeg /bench/
+
+RUN pip install --no-cache-dir keras_applications pillow grpcio grpcio-tools \
+        grpcio-status \
+    && pip --no-cache-dir install -i https://test.pypi.org/simple/ ptpsync \
+    && ln -sf /usr/bin/python3 /usr/local/bin/python \
+    && ln -sf /usr/bin/python3 /usr/local/bin/python3
+
+CMD ["/usr/local/bin/python3", "/bench/server.py"]

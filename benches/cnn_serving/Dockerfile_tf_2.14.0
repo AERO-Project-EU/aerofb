@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+FROM --platform=linux/arm64/v8 armswdev/tensorflow-arm-neoverse:r23.12-tf-2.14.0-eigen as stage-arm64
+
+# Commands run only for linux/arm64 target platform
+USER root:root
+
+FROM --platform=linux/amd64 tensorflow/tensorflow:2.14.0 as stage-amd64
+
+# Declare TARGETARCH to make it available
+ARG TARGETARCH
+# Select final stage based on TARGETARCH ARG
+FROM stage-${TARGETARCH} as final
+
+COPY *.py /bench/
+COPY *.h5 /bench/
+COPY *.jpeg /bench/
+WORKDIR /bench
+
+RUN apt-get purge -y python3-blinker \
+    && python3 -m pip install --upgrade pip \
+    && pip install --no-cache-dir keras_applications pillow Flask gunicorn \
+    && ln -sf /usr/bin/python3 /usr/local/bin/python \
+    && ln -sf /usr/bin/python3 /usr/local/bin/python3
+    #&& pip --no-cache-dir install -i https://test.pypi.org/simple/ ptpsync \
+
+CMD [ "gunicorn", "-b", "0.0.0.0", "-w", "1", "server:app" ]
