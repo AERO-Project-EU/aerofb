@@ -1,6 +1,6 @@
 # AERO FunctionBench
 
-![ghcri.io.yml-main](https://github.com/ckatsak/aerofb/actions/workflows/ghcr.io.yml/badge.svg?branch=main)
+[![ghcri.io.yml-main](https://github.com/ckatsak/aerofb/actions/workflows/ghcr.io.yml/badge.svg?branch=main)](.github/workflows/ghcr.io.yml)
 
 > [!NOTE]
 > Similar to `ckatsak/snaplace-fbpml`, but using plain JSON over HTTP (`Flask` +
