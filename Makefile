@@ -2,6 +2,9 @@
 # ckatsak, Thu Mar 14 04:08:46 AM EET 2024
 #
 DOCKER ?= docker
+
+REGISTRY = ghcr.io
+OWNER ?= ckatsak
 IMG_PREFIX := aerofb
 TAG ?= 0.0.1
 
@@ -24,7 +27,7 @@ $(BENCHES):
 		--platform linux/amd64,linux/arm64/v8 \
 		--push \
 		-f $@/Dockerfile \
-		-t ckatsak/$(IMG_PREFIX)-$(shell basename $@):$(TAG) \
+		-t $(REGISTRY)/$(OWNER)/$(IMG_PREFIX)-$(shell basename $@):$(TAG) \
 		$@
 
 .PHONY: base-images
@@ -34,15 +37,15 @@ base-images:
 
 ###############################################################################
 
-.PHONY: clean clean-images dist-clean
+.PHONY: clean clean-images distclean
 
 clean:
 	@$(RM) -v $(shell find benches -name 'server.py')
 
 clean-images:
 	-@for d in $(shell ls benches); do \
-		$(DOCKER) rmi ckatsak/$(IMG_PREFIX)-$$d:$(TAG); \
+		$(DOCKER) rmi $(REGISTRY)/$(OWNER)/$(IMG_PREFIX)-$$d:$(TAG); \
 	done
 
-dist-clean: clean clean-images
+distclean: clean clean-images
 
