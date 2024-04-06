@@ -3,27 +3,57 @@
 import json
 import os
 import sys
+import time
 
+import click
 import requests
 
 
-def payloadize(d):
-    return list(json.dumps(d).encode())
+DEFAULT_ADDRESS = "localhost:8000"
 
 
-def main(argv: list[str]) -> int:
-    bench = argv[0].strip()
-    print(f"INPUT: {json.dumps(TEST_INPUT[bench])}")
-
-    resp = requests.post(
-        "http://localhost:8000/invoke", json=TEST_INPUT[bench]
+@click.command()
+@click.option(
+    "-k",
+    "--knative",
+    "host_port",
+    metavar="HOST:PORT",
+    default=lambda: os.environ.get("HOSTPORT", DEFAULT_ADDRESS),
+    show_default=DEFAULT_ADDRESS,
+    type=str,
+    prompt="HOST:PORT",
+    help="Server address & port",
+)
+@click.argument("bench")
+def invoke(host_port: str, bench: str) -> int:
+    addr, port = host_port.split(":")
+    url = (
+        "http://"
+        + (
+            f'aerofb-{bench.replace("_", "-")}-fc.default.{addr}.sslip.io'
+            if addr != "localhost"
+            else "localhost"
+        )
+        + f":{port}/invoke"
     )
-    print(f"\n{resp}")
+    click.secho(f"URL: {url}", fg="blue")
+
+    click.secho(f"INPUT: {json.dumps(TEST_INPUT[bench])}", fg="yellow")
+
+    start_ts = time.perf_counter_ns()
+    resp = requests.post(url, json=TEST_INPUT[bench])
+    end_ts = time.perf_counter_ns()
+
     if 200 <= resp.status_code < 300:
-        print(resp.json())
+        click.secho(f"\n{resp}", fg="green", bold=True)
+        click.secho(resp.json(), fg="green")
+        click.secho(
+            f"Client-perceived latency: {end_ts - start_ts} ns", fg="cyan"
+        )
         return 0
     else:
-        print(resp.content.decode())
+        click.secho(f"\n{resp}", bg="red", bold=True)
+        click.secho(resp.content.decode(), fg="red")
         return 1
 
 
@@ -47,6 +77,11 @@ LANGUAGE, START_LETTERS, MODEL_PARAMETER_OBJ_KEY, MODEL_OBJ_KEY = (
 )
 VID_NAME = "big_buck_bunny_360p_1mb.mp4"
 IMG_IDX = 0
+
+
+def payloadize(d):
+    return list(json.dumps(d).encode())
+
 
 TEST_INPUT = {
     "helloworld": {},
@@ -174,4 +209,4 @@ TEST_INPUT = {
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(invoke())

@@ -61,7 +61,7 @@ dependencies:
   - nodejs=20.9.0=hb753e55_0
   - numpy=1.26.4=py312heda63a1_0
   - openjpeg=2.5.2=h488ebb8_0
-  - openssl=3.2.1=hd590300_0
+  - openssl=3.2.1=hd590300_1
   - packaging=24.0=pyhd8ed1ab_0
   - pandas=2.2.1=py312hfb8ada1_0
   - pathspec=0.12.1=pyhd8ed1ab_0
