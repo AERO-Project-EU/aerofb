@@ -1,0 +1,12 @@
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: aerofb-matmul
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/ckatsak/aerofb-matmul:0.0.1
+          ports:
+            - containerPort: 8000

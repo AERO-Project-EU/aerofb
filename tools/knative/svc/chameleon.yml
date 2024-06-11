@@ -1,0 +1,12 @@
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: aerofb-chameleon
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/ckatsak/aerofb-chameleon:0.0.1
+          ports:
+            - containerPort: 8000
