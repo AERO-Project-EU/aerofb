@@ -2,9 +2,11 @@
 
 [![ghcri.io.yml-main](https://github.com/ckatsak/aerofb/actions/workflows/ghcr.io.yml/badge.svg?branch=main)](.github/workflows/ghcr.io.yml)
 
-> [!NOTE]
-> Similar to `ckatsak/snaplace-fbpml`, but using plain JSON over HTTP (`Flask` +
-> `gunicorn`) instead of `protobuf` over `gRPC` (over HTTP/2).
+AERO port of Serverless functions adopted from the [original
+FunctionBench](https://github.com/ddps-lab/serverless-faas-workbench) FaaS
+benchmarking suite for multi-arch image builds.
+
+Functions speak JSON and are served over plain HTTP (`Flask` + `gunicorn`).
 
 ## Porting Status
 
