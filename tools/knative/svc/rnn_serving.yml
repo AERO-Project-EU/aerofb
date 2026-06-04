@@ -2,7 +2,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: aerofb-rnn_serving
+  name: aerofb-rnn-serving
 spec:
   template:
     spec:
@@ -10,3 +10,16 @@ spec:
         - image: ghcr.io/ckatsak/aerofb-rnn_serving:0.0.1
           ports:
             - containerPort: 8000
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: aerofb-rnn-serving-fc
+spec:
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/ckatsak/aerofb-rnn_serving:0.0.1
+          ports:
+            - containerPort: 8000
+      runtimeClassName: kata-fc
